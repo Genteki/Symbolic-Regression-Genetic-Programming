@@ -22,7 +22,7 @@ def rand_operator():
     return operators[r]
 
 #
-def split_dataset(X, Y, ratio=0.0):
+def split_dataset(X, Y, ratio=0.8):
     X.reshape((X.shape[0],1))
     Y.reshape((Y.shape[0],1))
     data_XY = np.c_[X,Y]
@@ -34,3 +34,6 @@ def split_dataset(X, Y, ratio=0.0):
     test_X = data_XY[train_size:data_XY.shape[0], 0:-1]
     test_Y = data_XY[train_size:data_XY.shape[0], -1]
     return train_X, train_Y, test_X, test_Y
+
+def one_over_mse(A, B):
+    return 1 / ((A-B)**2).mean()
