@@ -1,7 +1,7 @@
 from utils import *
 import numpy as np
 
-class SymbolicNode:
+class SymbolicNode(object):
     def __init__(self, degree=0, max_degree=10):
         self.f = None
         self.lchild = None
@@ -103,7 +103,7 @@ class SymbolicNode:
                 self.all_node[i].rchild = new_node
             else:
                 self.all_node[i].f = f_new
-                self.all_node[i].rchild.__del__()
+                # self.all_node[i].rchild.__del__()
                 self.all_node[i].rchild = None
         # const node
         else:
@@ -115,6 +115,10 @@ class SymbolicNode:
     def mutate_subtree(self, i=None, stop_rate=0.5, max_degree=10, x_rate=0.5):
         if i is None:
             i = self.rand_subtree_index()
+        if not self.all_node[i].lchild is None:
+            self.all_node[i].lchild.destroy()
+        if not self.all_node[i].rchild is None:
+            self.all_node[i].rchild.destroy()
         self.all_node[i].lchild = None
         self.all_node[i].rchild = None
         self.all_node[i].f = None
@@ -122,6 +126,8 @@ class SymbolicNode:
         self.all_node[i].random_grow(stop_rate=stop_rate, max_degree=max_degree, x_rate=x_rate)
 
     def mutate_hoist(self, i=None):
+        if self.lchild is None:
+            return
         if i is None:
             self.sort_degree()
             self.all_node_level_traverse()
@@ -151,6 +157,8 @@ class SymbolicNode:
         self.value = another.value
         self.n_child = another.n_child
         self.value = another.value
+        if not self.lchild is None: self.lchild.destroy()
+        if not self.rchild is None: self.rchild.destroy()
         if not another.lchild is None:
             self.lchild = another.lchild.copy()
         else:
@@ -179,12 +187,10 @@ class SymbolicNode:
         else:
             return ("(" + str(self.lchild) + dict_operators[self.f] + str(self.rchild) + ")")
 
-    def __del__(self):
-        if not self.lchild is None:
-            self.lchild.__del__()
-        elif not self.rchild is None:
-            self.rchild.__del__()
-        del self
+    def destroy(self):
+        self.all_node_level_traverse()
+        for node in self.all_node:
+            del node
 
 def test_rand():
     root = SymbolicNode()

@@ -50,8 +50,26 @@ class GeneticPrograming:
         for tree in pop:
             tree.sort_degree()
 
+    def _cut_off(self, offspring, last_size=10):
+        fn = np.ones(len(offspring))
+        for i in range(len(offspring)):
+            y_predict = offspring[i].post_order_traverse_recursive(self.x_test)
+            fn[i] = self.fitness_function(y_predict, self.y_test)
+        idx_off = fn.argsort()[::-1][0:self.pop_size-last_size]
+        idx_pop = self.fitness.argsort()[::-1][0:last_size]
+        new_pop = []
+        for i in idx_off:
+            new_pop.append(offspring[i].copy())
+        for i in idx_pop:
+            new_pop.append(self.pop[i].copy())
+        for node in offspring:
+            node.destroy()
+        for node in self.pop:
+            node.destroy()
+        self.pop = new_pop
+        self.fitness = np.r_[fn[idx_off], self.fitness[idx_pop]]
 
-    def evolve(self, n_generation=N_GENERATION):
+    def evolve(self):
         offspring = []
         for i in range(self.pop_size):
             parent_i = self._tournament()
@@ -64,6 +82,7 @@ class GeneticPrograming:
                 parent_subtree_idx = parent.rand_subtree_index()
                 parent_subtree = parent.all_node[parent_subtree_idx]
                 parent_subtree.copy2(parent2_subtree)
+                parent2.destroy()
             elif p < self.evo_rate[0:2].sum():      # subtree mutation
                 parent.mutate_subtree()
             elif p < self.evo_rate[0:3].sum():      # point mutation
@@ -71,8 +90,11 @@ class GeneticPrograming:
             elif p < self.evo_rate[0:4].sum():      # hoist mutation
                 parent.mutate_hoist()
             offspring.append(parent)
-        #
-        self.pop = offspring
+        # offspring = offspring + self.pop
+        self._cut_off(offspring)
+        # for node in self.pop:
+        #     node.destroy()
+        # self.pop = offspring
         self._update_best()
 
 def test_gp():
@@ -85,21 +107,28 @@ def test_gp():
                        dtype=np.float32)
     x = pts[:,0]
     y = pts[:,1]
-    gp = GeneticPrograming(x,y,one_over_mse)
+    gp = GeneticPrograming(x, y, one_over_mse)
     gp.init_population()
     plt.ion();
     plt.figure(figsize=(8,4))
     ax = plt.subplot(1,1,1)
     ax.scatter(x, y, marker=".", color="k",s=1)
-    #ax.set_ylim(-2,2)
+    ax.set_ylim(-2,3)
+    text = plt.text(0.3,2,"y=")
     title = plt.title("Best Fitness Function of GP")
+    best_fitness = gp.best_fitness
     for i in range(N_GENERATION):
         gp.evolve()
         print(i, gp.best_fitness)
-        y_predict = gp.best_node.post_order_traverse_recursive(x)
-        if y_predict.shape[0]==1: y_predict = np.zeors_like(y) + y_predict[0]
-        plt.gca().lines.clear()
-        plt.plot(x, y_predict, color="b"); plt.pause(0.05)
+        if gp.best_fitness > best_fitness:
+            best_fitness = gp.best_fitness
+            best_node = gp.best_node
+            x_plot = np.linspace(0,20,1000)
+            y_plot = gp.best_node.post_order_traverse_recursive(x_plot)
+            if type(y_plot)==float: y_plot = np.zeors_like(y) + y_plot[0]
+            ax.lines.clear()
+            ax.plot(x_plot, y_plot, color="b")
+            text.set_text("y="+str(best_node)+"\nN = "+str(i)); plt.pause(0.05)
 
 if __name__ == '__main__':
     test_gp()

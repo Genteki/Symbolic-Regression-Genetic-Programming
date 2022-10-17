@@ -15,7 +15,7 @@ def rand_const():
     r = np.random.rand() * 20 - 10
     if np.abs(r) < 0.0001:
         return rand_const() # regenerate a number if the absolute value is too small to avoid risks
-    return r
+    return round(r, 4)
 
 def rand_operator():
     r = np.random.randint(0,len(operators))
@@ -36,4 +36,7 @@ def split_dataset(X, Y, ratio=0.8):
     return train_X, train_Y, test_X, test_Y
 
 def one_over_mse(A, B):
-    return 1 / ((A-B)**2).mean()
+    return 1 / (((A-B)**2).mean() + 0.0001)
+
+def log_mse(A,B):
+    return -np.log((((A-B)**2).mean())+0.0001)
