@@ -19,7 +19,6 @@ def random_search(output_file, N=200 ,max_degree=8, fit=one_over_mse):
         root.random_grow()
         y_predict = root.post_order_traverse_recursive(x)
         fitness = fit(y_predict, y)
-        root.destroy()
         if best_fitness < fitness:
             best_fitness = fitness
         if not i % 200:

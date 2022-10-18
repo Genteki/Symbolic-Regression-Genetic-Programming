@@ -115,10 +115,6 @@ class SymbolicNode(object):
     def mutate_subtree(self, i=None, stop_rate=0.5, max_degree=10, x_rate=0.5):
         if i is None:
             i = self.rand_subtree_index()
-        if not self.all_node[i].lchild is None:
-            self.all_node[i].lchild.destroy()
-        if not self.all_node[i].rchild is None:
-            self.all_node[i].rchild.destroy()
         self.all_node[i].lchild = None
         self.all_node[i].rchild = None
         self.all_node[i].f = None
@@ -157,8 +153,6 @@ class SymbolicNode(object):
         self.value = another.value
         self.n_child = another.n_child
         self.value = another.value
-        if not self.lchild is None: self.lchild.destroy()
-        if not self.rchild is None: self.rchild.destroy()
         if not another.lchild is None:
             self.lchild = another.lchild.copy()
         else:
@@ -178,10 +172,8 @@ class SymbolicNode(object):
             else:
                 self.value = None
             if not self.lchild is None:
-                self.lchild.destroy()
                 self.lchild = None
             if not self.rchild is None:
-                self.rchild.destroy()
                 self.rchild = None
         if not self.lchild is None:
             self.lchild.sort_degree(init_degree+1)

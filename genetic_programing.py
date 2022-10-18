@@ -62,10 +62,6 @@ class GeneticPrograming:
             new_pop.append(offspring[i].copy())
         for i in idx_pop:
             new_pop.append(self.pop[i].copy())
-        for node in offspring:
-            node.destroy()
-        for node in self.pop:
-            node.destroy()
         self.pop = new_pop
         self.fitness = np.r_[fn[idx_off], self.fitness[idx_pop]]
 
@@ -80,7 +76,6 @@ class GeneticPrograming:
                 parent2_subtree_idx = parent2.rand_subtree_index()
                 parent_subtree_idx = parent.rand_subtree_index()
                 parent.all_node[parent_subtree_idx].copy2(parent2.all_node[parent2_subtree_idx])
-                parent2.destroy()
             elif p < self.evo_rate[0:2].sum():      # subtree mutation
                 parent.mutate_subtree()
             elif p < self.evo_rate[0:3].sum():      # point mutation
