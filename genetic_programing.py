@@ -46,6 +46,14 @@ class GeneticPrograming:
         parent = candidates[self.fitness[candidates].argmax()]
         return parent
 
+    def _roulette(self):
+        roulette_size = int(self.select_pressure * self.pop_size)
+        candidates = np.random.randint(self.pop_size, size=roulette_size)
+        p = self.fitness[candidates] ** 2
+        p = p / p.sum()
+        parent = np.random.choice(candidates,size=1,p=p)[0]
+        return parent
+
     def _sort_degree(self):
         for tree in pop:
             tree.sort_degree()
@@ -83,13 +91,29 @@ class GeneticPrograming:
             elif p < self.evo_rate[0:4].sum():      # hoist mutation
                 parent.mutate_hoist()
             offspring.append(parent)
-        # offspring = offspring + self.pop
         self._cut_off(offspring)
-        # for node in self.pop:
-        #     node.destroy()
-        # self.pop = offspring
         self._update_best()
 
+    def evolve_roulette(self):
+        offspring = []
+        for i in range(self.pop_size):
+            parent_i = self._roulette()
+            parent = self.pop[parent_i].copy()
+            p = np.random.rand()
+            if p < self.evo_rate[0]:                # crossover
+                parent2 = self.pop[self._roulette()].copy()
+                parent2_subtree_idx = parent2.rand_subtree_index()
+                parent_subtree_idx = parent.rand_subtree_index()
+                parent.all_node[parent_subtree_idx].copy2(parent2.all_node[parent2_subtree_idx])
+            elif p < self.evo_rate[0:2].sum():      # subtree mutation
+                parent.mutate_subtree()
+            elif p < self.evo_rate[0:3].sum():      # point mutation
+                parent.mutate_point()
+            elif p < self.evo_rate[0:4].sum():      # hoist mutation
+                parent.mutate_hoist()
+            offspring.append(parent)
+        self._cut_off(offspring)
+        self._update_best()
 
 def test_gp_animate(p=default_params):
     import matplotlib.pyplot as plt
@@ -111,8 +135,8 @@ def test_gp_animate(p=default_params):
     text = plt.text(0.3,2,"y=")
     title = plt.title("Best Fitness Function of GP")
     best_fitness = gp.best_fitness
-    for i in range(N_GENERATION):
-        gp.evolve()
+    for i in range(1000):
+        gp.evolve_roulette()
         print(i, gp.best_fitness)
         if gp.best_fitness > best_fitness:
             best_fitness = gp.best_fitness
@@ -126,4 +150,4 @@ def test_gp_animate(p=default_params):
 
 
 if __name__ == '__main__':
-    test_gp_animate()
+    test_gp_animate(p=gp_roulette_params)
