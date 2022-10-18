@@ -15,7 +15,7 @@ hc_params = {
 gp_roulette_params = {
     "pop_size": 1000,
     "max_degree": 8,
-    "select_pressure": 0.05,
+    "select_pressure": 0.02,
     "evo_rate": [0.9, 0.02, 0.04, 0.04]
 }
 
