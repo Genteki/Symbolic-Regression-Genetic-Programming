@@ -78,10 +78,8 @@ class GeneticPrograming:
             if p < self.evo_rate[0]:                # crossover
                 parent2 = self.pop[self._tournament()].copy()
                 parent2_subtree_idx = parent2.rand_subtree_index()
-                parent2_subtree = parent2.all_node[parent2_subtree_idx]
                 parent_subtree_idx = parent.rand_subtree_index()
-                parent_subtree = parent.all_node[parent_subtree_idx]
-                parent_subtree.copy2(parent2_subtree)
+                parent.all_node[parent_subtree_idx].copy2(parent2.all_node[parent2_subtree_idx])
                 parent2.destroy()
             elif p < self.evo_rate[0:2].sum():      # subtree mutation
                 parent.mutate_subtree()
