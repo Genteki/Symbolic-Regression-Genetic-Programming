@@ -125,29 +125,35 @@ def test_gp_animate(p=default_params):
                        dtype=np.float32)
     x = pts[:,0]
     y = pts[:,1]
-    gp = GeneticPrograming(x, y, one_over_mse, params=p)
+    x_train, y_train, x_test, y_test = split_dataset(x,y,ratio=0.9)
+    x_train, y_train, x_test, y_test = x_train.T, y_train.T, x_test.T, y_test.T
+    gp = GeneticPrograming(x_train, y_train, one_over_mse, params=p)
     gp.init_population()
     plt.ion();
     plt.figure(figsize=(8,4))
     ax = plt.subplot(1,1,1)
     ax.scatter(x, y, marker=".", color="k",s=1)
     ax.set_ylim(-2,3)
-    text = plt.text(0.3,2,"y=")
-    title = plt.title("Best Fitness Function of GP")
+    text = plt.text(1,2,"y=")
+    title = plt.title("Best Fitness Function of GA, Tournament Strategy")
     best_fitness = gp.best_fitness
     for i in range(1000):
-        gp.evolve_roulette()
-        print(i, gp.best_fitness)
+        gp.evolve()
+        y_predict = gp.best_node.post_order_traverse_recursive(y_test)
+        test_fit = one_over_mse(y_predict, y_test)
+        print(i, gp.best_fitness, test_fit)
+        #print(gp.best_node)
         if gp.best_fitness > best_fitness:
             best_fitness = gp.best_fitness
             best_node = gp.best_node
             x_plot = np.linspace(0,20,1000)
             y_plot = gp.best_node.post_order_traverse_recursive(x_plot)
-            if type(y_plot)==float: y_plot = np.zeors_like(y) + y_plot[0]
+            if type(y_plot)==np.float64: y_plot = np.zeros_like(y) + y_plot
+            if len(y_plot) == 1: y_plot = np.zeros_like(y) + y_plot[0]
             ax.lines.clear()
             ax.plot(x_plot, y_plot, color="b")
             text.set_text("y="+str(best_node)+"\nN = "+str(i)); plt.pause(0.05)
 
 
 if __name__ == '__main__':
-    test_gp_animate(p=gp_roulette_params)
+    test_gp_animate(p=default_params)

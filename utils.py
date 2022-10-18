@@ -23,8 +23,8 @@ def rand_operator():
 
 #
 def split_dataset(X, Y, ratio=0.8):
-    X.reshape((X.shape[0],1))
-    Y.reshape((Y.shape[0],1))
+    X = X.reshape((X.shape[0],1))
+    Y = Y.reshape((Y.shape[0],1))
     data_XY = np.c_[X,Y]
     np.random.shuffle(data_XY)
     train_size = int(data_XY.shape[0] * ratio)
