@@ -29,6 +29,10 @@ def test_gp_tournmant(output_file, p=default_params, N = N_GENERATION ,intvl=10)
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         filename = sys.argv[1]
+        N = int(sys.argv[2])
+        p = params_list[int(sys.argv[3])]
     else:
         filename = "test"
-    test_gp_tournmant(filename,N=20)
+        N = 20
+        p = default_params
+    test_gp_tournmant(filename,N=N,p=p)
