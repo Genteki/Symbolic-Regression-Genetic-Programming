@@ -139,7 +139,7 @@ def test_gp_animate(p=default_params):
     best_fitness = gp.best_fitness
     for i in range(1000):
         gp.evolve()
-        y_predict = gp.best_node.post_order_traverse_recursive(y_test)
+        y_predict = gp.best_node.post_order_traverse_recursive(x_test)
         test_fit = one_over_mse(y_predict, y_test)
         print(i, gp.best_fitness, test_fit)
         #print(gp.best_node)
