@@ -97,7 +97,7 @@ class GeneticPrograming:
         # self.pop = offspring
         self._update_best()
 
-def test_gp():
+def test_gp_animate(p=default_params):
     import matplotlib.pyplot as plt
     import seaborn as sns
     sns.set_style("whitegrid")
@@ -107,7 +107,7 @@ def test_gp():
                        dtype=np.float32)
     x = pts[:,0]
     y = pts[:,1]
-    gp = GeneticPrograming(x, y, one_over_mse)
+    gp = GeneticPrograming(x, y, one_over_mse, params=p)
     gp.init_population()
     plt.ion();
     plt.figure(figsize=(8,4))
@@ -130,5 +130,6 @@ def test_gp():
             ax.plot(x_plot, y_plot, color="b")
             text.set_text("y="+str(best_node)+"\nN = "+str(i)); plt.pause(0.05)
 
+
 if __name__ == '__main__':
-    test_gp()
+    test_gp_animate()
