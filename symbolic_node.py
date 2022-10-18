@@ -171,6 +171,18 @@ class SymbolicNode(object):
 
     def sort_degree(self, init_degree=0):
         self.degree = init_degree
+        if init_degree > self.max_degree:
+            self.f = None
+            if np.random.rand() >= 0.2:
+                self.value = rand_const()
+            else:
+                self.value = None
+            if not self.lchild is None:
+                self.lchild.destroy()
+                self.lchild = None
+            if not self.rchild is None:
+                self.rchild.destroy()
+                self.rchild = None
         if not self.lchild is None:
             self.lchild.sort_degree(init_degree+1)
         if not self.rchild is None:

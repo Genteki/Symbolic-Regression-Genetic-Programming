@@ -95,6 +95,7 @@ class GeneticPrograming:
         # self.pop = offspring
         self._update_best()
 
+
 def test_gp_animate(p=default_params):
     import matplotlib.pyplot as plt
     import seaborn as sns
