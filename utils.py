@@ -1,5 +1,6 @@
 import numpy as np
 
+
 operators = [np.add, np.subtract, np.multiply, np.divide, np.sin, np.cos]
 dict_operators = {
     np.add: "+",

@@ -16,6 +16,7 @@ class GeneticPrograming:
         self.x_test = x_test
         self.y_test = y_test
         self.fitness_function = fitness_function
+        self.complexity = 1
 
     def init_population(self):
         self.pop = []
@@ -114,6 +115,23 @@ class GeneticPrograming:
             offspring.append(parent)
         self._cut_off(offspring)
         self._update_best()
+
+    def get_complexity(self):
+        complexity = np.zeros_like(self.pop)
+        for i in range(len(self.pop)):
+            complexity[i] = len(self.pop[i].all_node_level_traverse())
+        return complexity
+
+    def get_best_complexity(self):
+        return len(self.best_node.all_node_level_traverse())
+
+    def get_convergence_rate(self):
+        cvg = self.fitness >= 999
+        return cvg.sum() / len(cvg)
+
+    def get_fitness(self):
+        return self.fitness
+
 
 def test_gp_animate(p=default_params):
     import matplotlib.pyplot as plt

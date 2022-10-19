@@ -1,5 +1,7 @@
 from utils import *
 import numpy as np
+import matplotlib.pyplot as plt
+import graphviz
 
 class SymbolicNode(object):
     def __init__(self, degree=0, max_degree=10):
@@ -195,6 +197,61 @@ class SymbolicNode(object):
         self.all_node_level_traverse()
         for node in self.all_node:
             del node
+
+    def node_str(self):
+        if not self.f is None:
+            return dict_operators[self.f]
+        elif not self.value is None:
+            return str(self.value)
+        else:
+            return "x"
+
+    def draw(self, deg=0):
+        self.sort_degree()
+        quene = [self]
+        G = nx.DiGraph()
+        G.add_node(self, subset=self.degree)
+        i = 0
+        while len(quene):
+            n = quene.pop(0)
+            j = 1
+            if not n.lchild is None:
+                quene.append(n.lchild)
+                G.add_node(n.lchild.node_str(), subset=n.lchild.degree)
+                G.add_edge(n, n.lchild)
+                j = j + 1
+            if not n.rchild is None:
+                quene.append(n.rchild)
+                G.add_node(n.rchild.node_str(), subset=n.rchild.degree)
+                G.add_edge(n, n.rchild)
+
+def node_str(node):
+    if not node.f is None:
+        return dict_operators[node.f]
+    elif not node.value is None:
+        return str(node.value)
+    else:
+        return "x"
+
+def draw_root(root):
+    quene = [root]
+    i=0
+    G = graphviz.Digraph()
+    G.node(str(i), label=node_str(root))
+    while len(quene):
+        n = quene.pop(0)
+        j = 1
+        if n.lchild is not None:
+            quene.append(n.lchild)
+            G.node(str(i+len(quene)), label=node_str(n.lchild))
+            G.edge(str(i),str(i+len(quene)))
+            j += 1
+        if n.rchild is not None:
+            quene.append(n.rchild)
+            G.node(str(i+len(quene)), label=node_str(n.rchild))
+            G.edge(str(i),str(i+len(quene)))
+        i += 1
+    return G
 
 def test_rand():
     root = SymbolicNode()
